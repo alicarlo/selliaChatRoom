@@ -16,13 +16,15 @@ export class SearchUserService {
 		const _id = id;
 		const currentUserData = await this.searchUserModel.findOne({ _id })
 		if (!currentUserData) {
-			throw new ConflictException('El  tag no existe777'+currentUserData);
+			// throw new ConflictException('El  tag no existe777'+currentUserData);
+			return null;
 		}
 
 		// User search
 		const existingData = await this.searchUserModel.findOne({ nickName })
 		if (!existingData) {
-			throw new ConflictException('El  tag no existe'+existingData);
+			// throw new ConflictException('El  tag no existe'+existingData);
+			return null;
 		}
 
 		const existingContact = await this.contactsModel.findById(_id).exec();
@@ -48,7 +50,7 @@ export class SearchUserService {
 
 		if (existingContact) {
 			const filteredContacts = existingContact.subCollection.some((x) => x.idContact ===  existingData._id.toString());
-			if (filteredContacts) throw new ConflictException('Ya tienes este contacto agregado');
+			if (filteredContacts) throw new InternalServerErrorException('Ya tienes este contacto agregado');
 			
 			const subContact: SubDocumentContact = {
 				firstName: existingData.firstName,

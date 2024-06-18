@@ -16,7 +16,7 @@ export class SearchUserController {
   @ApiResponse({ status: 400, description: 'Solicitud incorrecta.' })
 	@ApiResponse({ status: 409, description: 'El tag no existe' })
 	@ApiResponse({ status: 500, description: 'Error interno del servidor.' })
-  async searchUser(@Query('nickName') nickName: string, @Query('id') id: string): Promise<SubDocumentContact> {
+  async searchUser(@Query('nickName') nickName: string, @Query('id') id: string): Promise<SubDocumentContact | string> {
 		const result = await this.SearchUserService.search(nickName, id);
 		return result;
   }

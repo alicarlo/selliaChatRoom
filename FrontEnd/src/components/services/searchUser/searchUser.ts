@@ -16,6 +16,11 @@ export const searchUserService = {
 				params: { nickName, id }
 			});
 
+			if (response.data === '') {
+				const message = 'Usuario no encontrado';
+				toastCall(message, 'warning')
+			}
+
 			return response.data;
 		} catch (error) {
 			const axiosError = error as AxiosError;

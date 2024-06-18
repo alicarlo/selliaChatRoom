@@ -45,11 +45,17 @@ export class ChatGateway {
 			timestamp: messageInsertData.timestamp,
 			type: message.type
 		});
+		this.server.emit('chats',[message.senderId, message.receiverId])
 	}
 
 	@SubscribeMessage('leaveRoom')
   handleLeaveRoom(@MessageBody() data: any, @ConnectedSocket() client: Socket): void {
     client.leave(data.chatId);
   }
+
+	@SubscribeMessage('chats')
+	async handleChats(@MessageBody() id: string, @ConnectedSocket() client: Socket): Promise<void> {
+	
+	}
 }
 

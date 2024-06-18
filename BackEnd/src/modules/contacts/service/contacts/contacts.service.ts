@@ -13,11 +13,13 @@ export class ContactsService {
 		const existingContacts = await this.contactsModel.findById(idUser).exec(); 
 		
 		if (!existingContacts) {
-			throw new ConflictException('Sin contactos');
+			// throw new ConflictException('Sin contactos');
+			return [];
 		}
 
 		if (!existingContacts.subCollection) {
-			throw new ConflictException('Sin contactos');
+			// throw new ConflictException('Sin contactos');
+			return [];
 		}
 		
 		return existingContacts.subCollection

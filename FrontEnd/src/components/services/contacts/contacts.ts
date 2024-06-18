@@ -1,7 +1,7 @@
 const apiUrl = import.meta.env.VITE_API_URL
 import axios from 'axios';
 import { AxiosError } from 'axios';
-import { errorService } from '../errors/errors'
+import { errorService, toastCall } from '../errors/errors'
 import store  from '../../../store';
 
 export const contactsService = {
@@ -14,6 +14,11 @@ export const contactsService = {
 				},
 				params: { idUser }
 			});
+
+			if (!response.data.length) {
+				const message = 'Sin contactos';
+				toastCall(message, 'warning')
+			}
 
 			return response.data;
 		} catch (error) {

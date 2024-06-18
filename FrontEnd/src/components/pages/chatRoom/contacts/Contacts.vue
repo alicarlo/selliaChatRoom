@@ -47,7 +47,7 @@
 		<AddUserModal :isOpen="isModalOpen" @close="closeModal">
 			<div class="input-group">
 				<i class="fa fa-search icon-size"></i>
-				<input type="text" v-model="tagSearch" placeholder="Ingrese el tag del usuario a buscar">
+				<input type="text" v-model="tagSearch" placeholder="Ingrese el nombre del usuario a buscar">
 			</div>
 			<br>
 			<button class="button" @click="searchUser">
@@ -78,7 +78,7 @@ export default  {
 		const tagSearch = ref('');
 		const loading = ref(true);
 		const isModalOpen = ref(false);
-		let contactList = ref([]);
+		let contactList = ref([]) as any;
 
 		const chatSelect = (id: number) => {
 			selectedOption.value = id;
@@ -90,6 +90,9 @@ export default  {
 
     const closeModal = () => {
       isModalOpen.value = false;
+			loading.value = false;
+			tagSearch.value = '';
+
     };
 
 		const getContacts = async () => {
@@ -104,15 +107,18 @@ export default  {
 
 		const searchUser = async () => {
 			if (tagSearch.value === '') {
-				toastCall('Ingrese el tag del usuario a buscar', 'warning')
+				toastCall('Ingrese el nombre del usuario a buscar', 'warning')
 				return;
 			}
 			try {
-        await searchUserService.searchUser(tagSearch.value);
+        const search = await searchUserService.searchUser(tagSearch.value);
 				loading.value = true;
 				tagSearch.value = '';
-				closeModal();
-				getContacts();
+				if (search !== '') {
+					closeModal();
+					getContacts();
+					toastCall('Busqueda exitosa','success');
+				}
 
       } catch (error) {
 				// error

@@ -215,7 +215,7 @@ export default  {
 		let newMessage =  ref('') as unknown as Ref<String>
 		let mobileFlag = ref(0);
 		let mobileChangeWindow = ref(false);
-		let contactList = ref([]);
+		let contactList = ref([]) as any;
 		let chatList = ref([]) as any;
 		
 		const backMobile = () => {
@@ -287,9 +287,22 @@ export default  {
       }
 		};
 
-		const getChats = async (id1: string, id2: string) => {
+		const getChats = async (id1: string, id2: string, flag: boolean) => {
 			try {
-        chatList.value = await chatsService.getChatsById([id1, id2], user?.id);
+        let chatsAux = await chatsService.getChatsById([id1, id2], user?.id);
+				if (!flag) chatList.value = chatsAux;
+				else{
+					if (chatList.value.length === 0) chatList.value = chatsAux;
+					else {
+						let auxChatListOriginal  = JSON.parse(chatList.value);
+
+						const combinedArray = [...JSON.stringify(auxChatListOriginal), ...chatsAux];
+						chatList.value = combinedArray.filter((item, index, self) => 
+							index === self.findIndex((t) => t.id === item.id)
+						);
+
+					}
+				}
 				loading.value = false;
 				return chatList;
       } catch (error) {
@@ -308,7 +321,8 @@ export default  {
 
 		const getMessagesByIdChat = async (chatId: string) => {
 			try {
-        messagesList.value =  await getAllMessagesService.getMessages(chatId);
+				let msgList =  await getAllMessagesService.getMessages(chatId);
+        messagesList.value = msgList.reverse();
 				loadingMsg.value = false
       } catch (error) {
 				
@@ -336,23 +350,22 @@ export default  {
 
 		const sendMessage = async (type: number) => {
 			if (chatList.value.length === 0) {
-				getChats(user.id,selectedContact.value.idContact);
+				getChats(user.id,selectedContact.value.idContact, false);
 			} else {
 				let search = chatList.value.some((x: any) => x.contactData.idContact === selectedContact.value.idContact);
-				if (!search) getChats(user.id,selectedContact.value.idContact);
+				if (!search) getChats(user.id,selectedContact.value.idContact, false);
+
 			}
+
       socket.emit('message', { message: newMessage.value, type, senderId: user.id ,receiverId: selectedContact.value.idContact, chatId: chatId.value });
       newMessage.value = '';
 		}
 
 		const joinRoom = (chatId: string) => {
 			socket.emit('joinRoom', { senderId: user.id ,receiverId: selectedContact.value.idContact, chatId});
-			socket.on('connect', () => {
-				console.log('Connected to server');
-			});
-
+		
 			socket.on('message', (message: any) => {
-				messagesList.value.push(message);
+				messagesList.value.unshift(message);
 			});
     };
 
@@ -386,14 +399,25 @@ export default  {
 			});
   	}
 
+		const refreshChatsList = (idsList: Array<string>) => {
+			let searchChatId =  idsList.find((x: string) => x ===  user.id);
+			if (searchChatId !== undefined) getChats(user.id, '', true);
+		}
+
 		const onWidthChange = () => {
       windowWidth.value = window.innerWidth;
 			mobileChangeWindow.value =  windowWidth.value <= 800 ? true : false;
     };
 		
 		onMounted(() => {
+			socket.on('connect', () => {
+				console.log('Connected to server');
+			});
+			socket.on('chats', (listenChats: any) => {
+				refreshChatsList(listenChats);
+			});
 			getContacts();
-			getChats(user.id, '');
+			getChats(user.id, '', false);
 			window.addEventListener('resize', onWidthChange);
 			mobileChangeWindow.value =  windowWidth.value <= 800 ? true : false;
 			if (window.innerWidth < 800) {
@@ -881,6 +905,8 @@ p {
 	overflow-y: scroll;
 	overflow-x: hidden;
 	padding: 10px;
+	display: flex;
+  flex-direction: column-reverse;
 	@media(max-width: 1300px) {
 		height: calc(100% - 310px);
 	}

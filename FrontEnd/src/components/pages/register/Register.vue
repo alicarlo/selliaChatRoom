@@ -35,7 +35,7 @@
 
 					<div class="input-group">
 						<i class="fa-solid fa-id-card-clip icon-size"></i>
-						<input type="text" id="nickName" v-model="register.nickName.value" placeholder="Tag" :disabled="submitted">
+						<input type="text" id="nickName" v-model="register.nickName.value" placeholder="Nombre de usuario" :disabled="submitted">
 					</div>
 					<span class="error" v-if="errors.nickName">{{ errors.nickName }}</span>
 
@@ -115,7 +115,7 @@ export default  {
       }
 
 			if (!register.nickName.value) {
-        errors.nickName = 'El tag es requerido';
+        errors.nickName = 'El Nombre de usuario es requerido';
       } else {
         errors.nickName = '';
       }
