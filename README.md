@@ -31,7 +31,8 @@ Este es un proyecto de Chat Room que utiliza tecnologías modernas tanto en el f
 1. Clona el repositorio:
 
     ```bash
-    git clone https://github.com/tu-usuario/chat-room.git
+    git clone https://github.com//alicarlo/chat-room.git
+    
     cd chat-room
     ```
 
@@ -44,11 +45,20 @@ Este es un proyecto de Chat Room que utiliza tecnologías modernas tanto en el f
     npm install
     ```
 
-3. En el proyecto del backend, ejecuta el siguiente comando para levantar el contenedor de Docker:
+3. En el proyecto del backend, ejecuta el siguiente comando para levantar el contenedor de Docker de MongoDb:
 
     ```bash
     docker-compose up -d --build
     ```
+4. En el proyecto del backend, ejecuta el siguiente comando:
+
+    ```bash
+    npm run start:dev o npm run start
+
+5. En el proyecto del frontend, ejecuta el siguiente comando:
+
+    ```bash
+    npm run dev
 
 ## Funcionalidades
 
